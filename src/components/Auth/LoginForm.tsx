@@ -8,10 +8,9 @@ const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate login logic
     setTimeout(() => setIsLoading(false), 2000);
   };
 
@@ -103,7 +102,7 @@ const LoginForm: React.FC = () => {
       </div>
 
       <p className="text-center text-gray-400">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link href="/register" className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors">
           Create account
         </Link>
