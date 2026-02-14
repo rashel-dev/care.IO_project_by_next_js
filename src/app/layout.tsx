@@ -1,5 +1,6 @@
 import React from "react";
 import "./globals.css";
+import AuthProviders from "@/providers/AuthProviders";
 
 export const metadata = {
   title: "Care.io",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <AuthProviders>{children}</AuthProviders>
       </body>
     </html>
   );
