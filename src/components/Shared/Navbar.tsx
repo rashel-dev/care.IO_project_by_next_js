@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
                                         Hi, {session.user?.name?.split(' ')[0]}
                                     </li>
                                     <li><Link href="/profile" className="text-gray-300 hover:text-cyan-400 py-2">My Profile</Link></li>
-                                    <li><Link href="/bookings" className="text-gray-300 hover:text-cyan-400 py-2">My Bookings</Link></li>
+                                    <li><Link href="/my-bookings" className="text-gray-300 hover:text-cyan-400 py-2">My Bookings</Link></li>
                                     <li>
                                         <button 
                                             onClick={() => signOut()}

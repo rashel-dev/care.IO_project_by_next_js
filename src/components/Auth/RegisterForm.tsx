@@ -1,16 +1,30 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaGoogle, FaGithub, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
-import { signIn } from "next-auth/react";
+import { FaGoogle, FaGithub, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser, FaIdCard, FaPhone } from "react-icons/fa";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const RegisterForm: React.FC = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/login";
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/");
+    }
+  }, [status, router]);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    nid: "",
+    contact: "",
     password: "",
     confirmPassword: "",
   });
@@ -32,8 +46,10 @@ const RegisterForm: React.FC = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters long");
+    // Advanced Password Validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      toast.error("Password must be 6+ chars with 1 uppercase & 1 lowercase letter");
       return;
     }
 
@@ -47,6 +63,8 @@ const RegisterForm: React.FC = () => {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          nid: formData.nid,
+          contact: formData.contact,
         }),
       });
 
@@ -56,19 +74,21 @@ const RegisterForm: React.FC = () => {
         throw new Error(data.message || "Registration failed");
       }
 
-      toast.success("Account created successfully! Redirecting to login...");
+      toast.success("Account created successfully! Redirecting...");
       
       // Clear form
       setFormData({
         name: "",
         email: "",
+        nid: "",
+        contact: "",
         password: "",
         confirmPassword: "",
       });
 
       // Redirect after 2 seconds
       setTimeout(() => {
-        window.location.href = "/login";
+        router.push(callbackUrl);
       }, 2000);
 
     } catch (err: any) {
@@ -119,6 +139,38 @@ const RegisterForm: React.FC = () => {
               onChange={handleChange}
               className="block w-full pl-10 pr-3 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all duration-300"
               placeholder="Email address"
+            />
+          </div>
+
+          {/* NID Field */}
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400 group-focus-within:text-cyan-400 transition-colors">
+              <FaIdCard />
+            </div>
+            <input
+              type="text"
+              name="nid"
+              required
+              value={formData.nid}
+              onChange={handleChange}
+              className="block w-full pl-10 pr-3 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all duration-300"
+              placeholder="NID Number"
+            />
+          </div>
+
+          {/* Contact Field */}
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400 group-focus-within:text-cyan-400 transition-colors">
+              <FaPhone />
+            </div>
+            <input
+              type="tel"
+              name="contact"
+              required
+              value={formData.contact}
+              onChange={handleChange}
+              className="block w-full pl-10 pr-3 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all duration-300"
+              placeholder="Contact Number"
             />
           </div>
 

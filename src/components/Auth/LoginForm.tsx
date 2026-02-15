@@ -1,13 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaGoogle, FaGithub, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const LoginForm: React.FC = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace(callbackUrl);
+    }
+  }, [status, router, callbackUrl]);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -36,7 +48,7 @@ const LoginForm: React.FC = () => {
       } else {
         toast.success("Login successful!");
         setTimeout(() => {
-          window.location.href = "/";
+          router.push(callbackUrl);
         }, 1000);
       }
     } catch (error) {
@@ -45,6 +57,14 @@ const LoginForm: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <span className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md p-8 space-y-8 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl transition-all duration-300 hover:shadow-cyan-500/10">
@@ -149,7 +169,10 @@ const LoginForm: React.FC = () => {
 
       <p className="text-center text-gray-400">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors">
+        <Link 
+          href={`/register${callbackUrl !== '/' ? `?callbackUrl=${callbackUrl}` : ''}`} 
+          className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+        >
           Create account
         </Link>
       </p>

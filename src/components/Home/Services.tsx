@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 const services = [
   {
+    id: "baby-care",
     title: "Baby Care",
     description: "Expert nurturing for your little ones. Our babysitters are trained in early childhood safety and creative engagement.",
     icon: <FaBaby />,
@@ -12,6 +13,7 @@ const services = [
     textColor: "text-rose-400"
   },
   {
+    id: "elderly-care",
     title: "Elderly Service",
     description: "Dignified support for seniors. We assist with daily living, medication management, and provide valuable companionship.",
     icon: <FaBlind />,
@@ -20,6 +22,7 @@ const services = [
     textColor: "text-cyan-400"
   },
   {
+    id: "sick-care",
     title: "Sick People Service",
     description: "Specialized care for those recovering or managing illness. Our caregivers ensure a comfortable healing environment at home.",
     icon: <FaUserNurse />,
@@ -65,7 +68,7 @@ const Services: React.FC = () => {
                   {service.description}
                 </p>
                 <Link 
-                  href={`/services#${service.title.toLowerCase().replace(' ', '-')}`}
+                  href={`/service/${service.id}`}
                   className="inline-flex items-center gap-2 text-white font-semibold hover:text-cyan-400 transition-colors group/link"
                 >
                   Learn More 

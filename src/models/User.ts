@@ -7,7 +7,9 @@ export interface IUser{
   name: string;
   email: string;
   image?: string;
-  password?: string; // Optional because Google users won't have a password initially
+  password?: string;
+  nid?: string;
+  contact?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -32,6 +34,14 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       required: false, // Optional for OAuth (Google) users
       select: false,  // Security: Don't include password in queries by default
+    },
+    nid: {
+      type: String,
+      required: false,
+    },
+    contact: {
+      type: String,
+      required: false,
     },
   },
   {

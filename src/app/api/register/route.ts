@@ -5,11 +5,20 @@ import User from "@/models/User";
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, nid, contact } = await req.json();
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !nid || !contact) {
       return NextResponse.json(
-        { message: "Name, email, and password are required" },
+        { message: "All fields (Name, Email, Password, NID, Contact) are required" },
+        { status: 400 }
+      );
+    }
+
+    // Password Validation: 6+ char, 1 uppercase, 1 lowercase
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    if (!passwordRegex.test(password)) {
+      return NextResponse.json(
+        { message: "Password must be at least 6 characters long and contain at least one uppercase and one lowercase letter" },
         { status: 400 }
       );
     }
@@ -33,6 +42,8 @@ export async function POST(req: Request) {
       name,
       email,
       password: hashedPassword,
+      nid,
+      contact,
     });
 
     return NextResponse.json(
@@ -42,7 +53,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Registration error:", error);
     return NextResponse.json(
-      { message: "Interneal server error" },
+      { message: "Internal server error" },
       { status: 500 }
     );
   }
