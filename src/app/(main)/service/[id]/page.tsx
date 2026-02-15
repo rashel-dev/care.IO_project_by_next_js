@@ -1,38 +1,26 @@
+"use client";
+
+import React from 'react';
+import { useParams } from 'next/navigation';
 import { services } from '@/data/services';
-import { Metadata } from 'next';
 import ServiceDetailContent from '@/components/Service/ServiceDetailContent';
 import { notFound } from 'next/navigation';
 
-interface Props {
-  params: { id: string };
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const service = services.find((s) => s.id === params.id);
+const ServiceDetailPage = () => {
+  const { id } = useParams();
+  
+  const service = services.find((s) => s.id === id);
 
   if (!service) {
-    return {
-      title: 'Service Not Found | Care.io',
-    };
-  }
-
-  return {
-    title: `${service.title} | Premium Caregiving by Care.io`,
-    description: service.description,
-    openGraph: {
-      title: `${service.title} | Care.io`,
-      description: service.description,
-      images: [service.image],
-    },
-  };
-}
-
-export default function Page({ params }: Props) {
-  const service = services.find((s) => s.id === params.id);
-
-  if (!service) {
-    notFound();
+    // Return a simple message instead of notFound() to avoid infinite loops or other issues in some environments
+    return (
+        <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
+            Service Not Found
+        </div>
+    );
   }
 
   return <ServiceDetailContent service={service} />;
 }
+
+export default ServiceDetailPage;

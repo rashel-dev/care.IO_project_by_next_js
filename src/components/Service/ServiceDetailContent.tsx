@@ -36,7 +36,7 @@ const ServiceDetailContent = ({ service }: { service: Service }) => {
                             alt={service.title} 
                             className="w-full aspect-[4/3] object-cover"
                         />
-                        <div className="absolute inset-x-0 bottom-0 p-8 bg-linear-to-t from-black/80 to-transparent">
+                        <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black/80 to-transparent">
                             <span className="px-4 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-sm font-semibold">
                                 {service.category}
                             </span>

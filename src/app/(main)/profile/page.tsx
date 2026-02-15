@@ -1,0 +1,93 @@
+"use client";
+
+import React from 'react';
+import { useSession } from 'next-auth/react';
+import { FaUserCircle, FaEnvelope, FaIdCard, FaPhone, FaShieldAlt } from 'react-icons/fa';
+
+const ProfilePage = () => {
+    const { data: session } = useSession();
+
+    if (!session) return null;
+
+    return (
+        <main className="min-h-screen bg-[#0a0a0a] pt-32 pb-20">
+            <div className="container mx-auto px-6 max-w-4xl">
+                <div className="text-center mb-16">
+                    <h1 className="text-5xl font-bold text-white mb-4">Account <span className="text-cyan-400">Settings</span></h1>
+                    <p className="text-gray-400">Manage your personal information and preferences.</p>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-8">
+                    {/* Left Panel - Avatar */}
+                    <div className="md:col-span-1 space-y-6">
+                        <div className="p-8 bg-white/5 border border-white/10 rounded-[32px] text-center space-y-6">
+                            <div className="relative inline-block">
+                                <img 
+                                    src={session.user?.image || "https://i.pravatar.cc/150?u=me"} 
+                                    className="w-32 h-32 rounded-full border-4 border-cyan-500/20 shadow-2xl shadow-cyan-500/10 object-cover mx-auto"
+                                    alt="Avatar"
+                                />
+                                <div className="absolute bottom-0 right-0 w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white text-xs border-4 border-[#0a0a0a] cursor-pointer hover:scale-110 transition-transform">
+                                    📸
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-white">{session.user?.name}</h2>
+                                <p className="text-cyan-500 text-sm font-bold uppercase tracking-widest mt-1">{(session.user as any).role || 'User'}</p>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-white/5 border border-white/10 rounded-2xl space-y-4">
+                            <h3 className="text-white font-bold flex items-center gap-2">
+                                <FaShieldAlt className="text-cyan-500" /> Trust Status
+                            </h3>
+                            <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20">
+                                ✅ Account Verified
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Panel - Details */}
+                    <div className="md:col-span-2 space-y-8">
+                        <div className="p-10 bg-white/5 border border-white/10 rounded-[40px] shadow-2xl space-y-10">
+                            <div className="grid sm:grid-cols-2 gap-10">
+                                <div className="space-y-3">
+                                    <label className="text-gray-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                                        <FaUserCircle /> Full Name
+                                    </label>
+                                    <p className="text-white text-lg font-medium bg-white/5 p-4 rounded-xl border border-white/5">{session.user?.name}</p>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-gray-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                                        <FaEnvelope /> Email Address
+                                    </label>
+                                    <p className="text-white text-lg font-medium bg-white/5 p-4 rounded-xl border border-white/5">{session.user?.email}</p>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-gray-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                                        <FaIdCard /> NID Number
+                                    </label>
+                                    <p className="text-gray-500 text-lg italic bg-white/5 p-4 rounded-xl border border-white/5">Not provided</p>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-gray-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                                        <FaPhone /> Contact
+                                    </label>
+                                    <p className="text-gray-500 text-lg italic bg-white/5 p-4 rounded-xl border border-white/5">Not provided</p>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-white/5 flex justify-end">
+                                <button className="px-10 py-4 bg-cyan-500 hover:bg-cyan-600 text-white font-bold rounded-2xl transition-all hover:scale-105 shadow-xl shadow-cyan-500/20 active:scale-95">
+                                    Update Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    );
+};
+
+export default ProfilePage;

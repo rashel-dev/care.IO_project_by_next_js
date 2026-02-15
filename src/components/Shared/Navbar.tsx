@@ -37,7 +37,12 @@ const Navbar: React.FC = () => {
                 <div className="flex items-center gap-4">
                     {session ? (
                         <div className="flex items-center gap-4">
-                            <Link href="/dashboard" className="hidden md:block text-gray-300 hover:text-white font-medium">Dashboard</Link>
+                            <Link 
+                                href={session.user?.role === 'admin' ? '/admin' : '/my-bookings'} 
+                                className="hidden md:block text-gray-300 hover:text-white font-medium"
+                            >
+                                Dashboard
+                            </Link>
                             <div className="dropdown dropdown-end">
                                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar border border-white/10 hover:border-cyan-500/50 transition-all">
                                     <div className="w-10 rounded-full">
