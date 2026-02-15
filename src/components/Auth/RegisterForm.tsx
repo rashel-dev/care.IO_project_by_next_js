@@ -4,17 +4,78 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { FaGoogle, FaGithub, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
 import { signIn } from "next-auth/react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RegisterForm: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Basic Validation
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
     setIsLoading(true);
-    // Simulate registration logic
-    setTimeout(() => setIsLoading(false), 2000);
+
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      toast.success("Account created successfully! Redirecting to login...");
+      
+      // Clear form
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
+
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred during registration");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -33,7 +94,10 @@ const RegisterForm: React.FC = () => {
             </div>
             <input
               type="text"
+              name="name"
               required
+              value={formData.name}
+              onChange={handleChange}
               className="block w-full pl-10 pr-3 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all duration-300"
               placeholder="Full Name"
             />
@@ -46,7 +110,10 @@ const RegisterForm: React.FC = () => {
             </div>
             <input
               type="email"
+              name="email"
               required
+              value={formData.email}
+              onChange={handleChange}
               className="block w-full pl-10 pr-3 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all duration-300"
               placeholder="Email address"
             />
@@ -59,7 +126,10 @@ const RegisterForm: React.FC = () => {
             </div>
             <input
               type={showPassword ? "text" : "password"}
+              name="password"
               required
+              value={formData.password}
+              onChange={handleChange}
               className="block w-full pl-10 pr-10 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all duration-300"
               placeholder="Password"
             />
@@ -79,7 +149,10 @@ const RegisterForm: React.FC = () => {
             </div>
             <input
               type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
               required
+              value={formData.confirmPassword}
+              onChange={handleChange}
               className="block w-full pl-10 pr-10 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all duration-300"
               placeholder="Confirm Password"
             />
@@ -96,11 +169,11 @@ const RegisterForm: React.FC = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="relative w-full py-3 bg-linear-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl overflow-hidden group shadow-lg shadow-cyan-500/20 active:scale-[0.98] transition-all"
+          className="relative w-full py-3 bg-linear-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl overflow-hidden group shadow-lg shadow-cyan-500/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="relative z-10 flex items-center justify-center">
             {isLoading ? (
-              <span className="loading loading-spinner loading-sm"></span>
+              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             ) : (
               "Sign Up"
             )}
@@ -136,6 +209,7 @@ const RegisterForm: React.FC = () => {
           Sign In
         </Link>
       </p>
+      <ToastContainer position="top-right" theme="dark" />
     </div>
   );
 };

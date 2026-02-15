@@ -27,9 +27,11 @@ const dbConnect = async () => {
   }
 
   try {
+    console.log("database is connecting");
     cached.conn = await cached.promise;
     console.log("database is connected");
   } catch (error) {
+    console.log("database connection error");
     throw error;
   }
 
