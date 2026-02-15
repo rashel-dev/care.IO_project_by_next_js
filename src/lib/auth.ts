@@ -22,7 +22,7 @@ const authOptions: NextAuthOptions = {
                 }
 
                 await dbConnect();
-                let user = await User.findOne({ email });
+                let user = await User.findOne({ email }).select("+password");
                 if(!user){
                     throw new Error("User not found");
                 }
@@ -49,6 +49,27 @@ const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
+        async signIn({ user, account }) {
+            if (account?.provider === "google") {
+                await dbConnect();
+                try {
+                    const existingUser = await User.findOne({ email: user.email });
+                    if (!existingUser) {
+                        await User.create({
+                            name: user.name,
+                            email: user.email,
+                            image: user.image,
+                        });
+                    }
+                    return true;
+                } catch (error) {
+                    console.error("Error saving Google user:", error);
+                    return false;
+                }
+            }
+            return true;
+        },
+
         async jwt({token, user}){
             if(user){
                 token.id = user.id,

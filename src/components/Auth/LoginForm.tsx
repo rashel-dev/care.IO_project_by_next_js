@@ -4,15 +4,46 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { FaGoogle, FaGithub, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { signIn } from "next-auth/react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginForm: React.FC = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 2000);
+    
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (res?.error) {
+        toast.error(res.error);
+      } else {
+        toast.success("Login successful!");
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1000);
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -31,7 +62,10 @@ const LoginForm: React.FC = () => {
             </div>
             <input
               type="email"
+              name="email"
               required
+              value={formData.email}
+              onChange={handleChange}
               className="block w-full pl-10 pr-3 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all duration-300"
               placeholder="Email address"
             />
@@ -44,7 +78,10 @@ const LoginForm: React.FC = () => {
             </div>
             <input
               type={showPassword ? "text" : "password"}
+              name="password"
               required
+              value={formData.password}
+              onChange={handleChange}
               className="block w-full pl-10 pr-10 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all duration-300"
               placeholder="Password"
             />
@@ -75,7 +112,7 @@ const LoginForm: React.FC = () => {
         >
           <span className="relative z-10 flex items-center justify-center">
             {isLoading ? (
-              <span className="loading loading-spinner loading-sm"></span>
+               <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             ) : (
               "Sign In"
             )}
@@ -95,12 +132,14 @@ const LoginForm: React.FC = () => {
 
       <div className="grid grid-cols-2 gap-4">
         <button 
-          onClick={() => signIn("google")}
+          onClick={() => signIn("google", { callbackUrl: "/" })}
           className="flex items-center justify-center px-4 py-2 border border-gray-700/50 rounded-xl bg-gray-900/50 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300"
         >
           <FaGoogle className="mr-2 text-red-500" /> Google
         </button>
-        <button className="flex items-center justify-center px-4 py-2 border border-gray-700/50 rounded-xl bg-gray-900/50 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300">
+        <button
+        onClick={() => toast.error("GitHub implementation is in progress")}
+         className="flex items-center justify-center px-4 py-2 border border-gray-700/50 rounded-xl bg-gray-900/50 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300">
           <FaGithub className="mr-2" /> GitHub
         </button>
       </div>
@@ -111,6 +150,7 @@ const LoginForm: React.FC = () => {
           Create account
         </Link>
       </p>
+      <ToastContainer position="top-right" theme="dark" />
     </div>
   );
 };

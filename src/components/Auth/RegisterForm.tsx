@@ -193,12 +193,14 @@ const RegisterForm: React.FC = () => {
 
       <div className="grid grid-cols-2 gap-4">
         <button 
-          onClick={() => signIn("google")}
+          onClick={() => signIn("google", { callbackUrl: "/" })}
           className="flex items-center justify-center px-4 py-2 border border-gray-700/50 rounded-xl bg-gray-900/50 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300"
         >
           <FaGoogle className="mr-2 text-red-500" /> Google
         </button>
-        <button className="flex items-center justify-center px-4 py-2 border border-gray-700/50 rounded-xl bg-gray-900/50 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300">
+        <button
+        onClick={() => toast.error("GitHub implementation is in progress")}
+         className="flex items-center justify-center px-4 py-2 border border-gray-700/50 rounded-xl bg-gray-900/50 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300">
           <FaGithub className="mr-2" /> GitHub
         </button>
       </div>
