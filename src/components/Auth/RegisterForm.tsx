@@ -81,6 +81,9 @@ const RegisterForm: React.FC = () => {
   return (
     <div className="w-full max-w-md p-8 space-y-8 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl transition-all duration-300 hover:shadow-cyan-500/10">
       <div className="text-center">
+        <Link href="/" className="inline-block mb-4 transition-transform hover:scale-105 active:scale-95">
+          <img src="/care_logo.png" alt="Care.io Logo" className="w-16 h-16 object-contain" />
+        </Link>
         <h2 className="text-4xl font-bold tracking-tight text-white mb-2">Create Account</h2>
         <p className="text-gray-400">Join us to get started with your journey</p>
       </div>
