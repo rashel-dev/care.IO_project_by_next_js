@@ -3,8 +3,16 @@ import Hero from '@/components/Home/Hero';
 import About from '@/components/Home/About';
 import Services from '@/components/Home/Services';
 import Testimonials from '@/components/Home/Testimonials';
+import Link from "next/link";
+import { Metadata } from "next";
 
-const Home = () => {
+export const metadata: Metadata = {
+  title: "Care.io | Premium Caregiving Services",
+  description: "Experience exceptional care for your loved ones. We provide verified experts for baby care, elderly support, and specialized medical assistance.",
+  keywords: ["caregiving", "baby care", "elderly care", "home nursing", "medical support"],
+};
+
+export default function Home() {
     return (
         <main className="min-h-screen bg-[#0a0a0a]">
             {/* Hero Section */}
@@ -23,7 +31,7 @@ const Home = () => {
             <section className="py-24 bg-[#0a0a0a]">
                 <div className="container mx-auto px-6">
                     <div className="relative rounded-[40px] overflow-hidden bg-white/5 border border-white/10 p-12 lg:p-20 text-center space-y-8">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
+                        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-cyan-500 to-transparent" />
                         
                         <h2 className="text-4xl lg:text-6xl font-bold text-white max-w-4xl mx-auto leading-tight">
                             Ready to Give Your Family the <span className="text-cyan-400">Care They Deserve?</span>
@@ -46,6 +54,4 @@ const Home = () => {
             </section>
         </main>
     );
-};
-
-export default Home;
+}

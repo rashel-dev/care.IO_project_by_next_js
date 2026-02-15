@@ -1,22 +1,16 @@
-import mongoose, { Schema, Model } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-// IUser Interface
-
-export interface IUser{
-  _id?: mongoose.Types.ObjectId;
+export interface IUser {
   name: string;
   email: string;
   image?: string;
   password?: string;
   nid?: string;
   contact?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  role: "user" | "admin";
 }
 
-//  User Schema
- 
-const UserSchema: Schema<IUser> = new Schema(
+const UserSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -32,8 +26,8 @@ const UserSchema: Schema<IUser> = new Schema(
     },
     password: {
       type: String,
-      required: false, // Optional for OAuth (Google) users
-      select: false,  // Security: Don't include password in queries by default
+      required: false,
+      select: false,
     },
     nid: {
       type: String,
@@ -43,14 +37,17 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       required: false,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
   {
-    timestamps: true, // Automatically manages createdAt and updatedAt
+    timestamps: true,
   }
 );
 
-// User Model
-
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
 
 export default User;

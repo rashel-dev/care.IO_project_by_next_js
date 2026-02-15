@@ -5,8 +5,8 @@ const Hero: React.FC = () => {
   return (
     <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-[#0a0a0a]">
       {/* Background Glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 right-0 w-125 h-125 bg-cyan-500/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-125 h-125 bg-blue-600/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -20,7 +20,7 @@ const Hero: React.FC = () => {
             </div>
             
             <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-white">
-              Compassionate Care for Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Loved Ones</span>
+              Compassionate Care for Your <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-500">Loved Ones</span>
             </h1>
             
             <p className="text-xl text-gray-400 leading-relaxed">
@@ -65,7 +65,7 @@ const Hero: React.FC = () => {
                 alt="Compassionate Caregiver" 
                 className="w-full h-auto object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a]/60 to-transparent" />
             </div>
             {/* Decorative Elements */}
             <div className="absolute -top-6 -right-6 w-32 h-32 bg-cyan-500/20 rounded-full blur-2xl animate-pulse" />

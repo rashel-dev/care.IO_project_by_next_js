@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import authOptions from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import Booking from "@/models/Booking";
+import { sendInvoiceEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -26,6 +27,11 @@ export async function POST(req: Request) {
     });
 
     await newBooking.save();
+
+    // Send invoice email asynchronously
+    if (session.user.email) {
+      sendInvoiceEmail(session.user.email, newBooking).catch(err => console.error("Email error:", err));
+    }
 
     return NextResponse.json({ message: "Booking created successfully", booking: newBooking }, { status: 201 });
   } catch (error: any) {
