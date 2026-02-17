@@ -4,6 +4,7 @@ import authOptions from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import Booking from "@/models/Booking";
 import { sendInvoiceEmail } from "@/lib/email";
+import mongoose from "mongoose";
 
 export async function POST(req: Request) {
   try {
@@ -16,14 +17,28 @@ export async function POST(req: Request) {
 
     await dbConnect();
 
+    // Convert userId to ObjectId if it's a string
+    let userId: mongoose.Types.ObjectId;
+    try {
+      userId = new mongoose.Types.ObjectId(session.user.id);
+    } catch (error) {
+      // If conversion fails, try to find user by email and use their _id
+      const User = (await import("@/models/User")).default;
+      const user = await User.findOne({ email: session.user.email });
+      if (!user) {
+        return NextResponse.json({ message: "User not found" }, { status: 404 });
+      }
+      userId = user._id as mongoose.Types.ObjectId;
+    }
+
     const newBooking = new Booking({
-      userId: session.user.id,
+      userId: userId,
       serviceId,
       serviceName,
       duration,
       location,
       totalCost,
-      status: 'Pending',
+      status: 'Confirmed', // Mark as paid/confirmed when payment button is clicked
     });
 
     await newBooking.save();
@@ -49,7 +64,21 @@ export async function GET(req: Request) {
   
       await dbConnect();
   
-      const bookings = await Booking.find({ userId: session.user.id }).sort({ createdAt: -1 });
+      // Convert userId to ObjectId if it's a string
+      let userId: mongoose.Types.ObjectId;
+      try {
+        userId = new mongoose.Types.ObjectId(session.user.id);
+      } catch (error) {
+        // If conversion fails, try to find user by email and use their _id
+        const User = (await import("@/models/User")).default;
+        const user = await User.findOne({ email: session.user.email });
+        if (!user) {
+          return NextResponse.json({ message: "User not found" }, { status: 404 });
+        }
+        userId = user._id as mongoose.Types.ObjectId;
+      }
+  
+      const bookings = await Booking.find({ userId: userId }).sort({ createdAt: -1 });
   
       return NextResponse.json(bookings);
     } catch (error: any) {

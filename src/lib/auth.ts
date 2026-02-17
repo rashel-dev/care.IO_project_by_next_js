@@ -73,11 +73,32 @@ const authOptions: NextAuthOptions = {
 
         async jwt({token, user}){
             if(user){
-                token.id = user.id;
-                token.name = user.name;
-                token.email = user.email;
-                token.image = user.image;
-                token.role = user.role;
+                // For Google OAuth, user.id is a string, so we need to find the MongoDB user
+                if (user.email) {
+                    await dbConnect();
+                    const dbUser = await User.findOne({ email: user.email });
+                    if (dbUser) {
+                        token.id = dbUser._id.toString();
+                        token.name = dbUser.name;
+                        token.email = dbUser.email;
+                        token.image = dbUser.image;
+                        token.role = dbUser.role;
+                    } else {
+                        // Fallback to user.id if database user not found
+                        token.id = user.id;
+                        token.name = user.name;
+                        token.email = user.email;
+                        token.image = user.image;
+                        token.role = user.role;
+                    }
+                } else {
+                    // For credentials provider, user.id is already the MongoDB _id
+                    token.id = user.id;
+                    token.name = user.name;
+                    token.email = user.email;
+                    token.image = user.image;
+                    token.role = user.role;
+                }
             }
 
             return token;

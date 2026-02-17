@@ -6,7 +6,7 @@ import { services } from '@/data/services';
 import { useSession } from 'next-auth/react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaCalendarAlt, FaMapMarkerAlt, FaCalculator, FaCheckCircle, FaChevronRight, FaChevronLeft, FaStripe } from 'react-icons/fa';
+import { FaCalendarAlt, FaMapMarkerAlt, FaCalculator, FaCheckCircle, FaChevronRight, FaChevronLeft } from 'react-icons/fa';
 
 const BookingPage = () => {
   const { id } = useParams();
@@ -62,28 +62,40 @@ const BookingPage = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/create-checkout-session', {
+      const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          service,
-          bookingData: {
-            ...formData,
-            totalCost
+          serviceId: service.id,
+          serviceName: service.title,
+          duration: {
+            type: formData.durationType,
+            value: formData.durationValue,
           },
+          location: {
+            division: formData.division,
+            district: formData.district,
+            city: formData.city,
+            area: formData.area,
+            address: formData.address,
+          },
+          totalCost: totalCost,
         }),
       });
 
-      const sessionData = await res.json();
+      const data = await res.json();
 
-      if (res.ok && sessionData.url) {
-        window.location.href = sessionData.url;
+      if (res.ok) {
+        toast.success("Booking confirmed and marked as paid!");
+        setTimeout(() => {
+          router.push('/my-bookings');
+        }, 1500);
       } else {
-        toast.error(sessionData.message || "Failed to initiate payment");
+        toast.error(data.message || "Failed to confirm booking");
       }
     } catch (err) {
       console.error(err);
-      toast.error("An error occurred during payment setup");
+      toast.error("An error occurred during booking confirmation");
     } finally {
       setIsSubmitting(false);
     }
@@ -211,8 +223,7 @@ const BookingPage = () => {
                             disabled={isSubmitting}
                             className="flex items-center justify-center gap-3 px-12 py-4 bg-linear-to-r from-cyan-500 to-blue-600 hover:scale-[1.02] text-white font-extrabold rounded-xl transition-all shadow-xl shadow-cyan-500/20 disabled:opacity-50"
                         >
-                            <FaStripe className="text-2xl" />
-                            {isSubmitting ? 'Processing...' : 'Pay with Stripe & Book'}
+                            {isSubmitting ? 'Processing...' : 'Confirm Payment & Book'}
                         </button>
                     </div>
                 </div>
