@@ -71,7 +71,7 @@ const authOptions: NextAuthOptions = {
             return true;
         },
 
-        async jwt({token, user}){
+        async jwt({ token, user, trigger, session }){
             if(user){
                 // For Google OAuth, user.id is a string, so we need to find the MongoDB user
                 if (user.email) {
@@ -99,6 +99,12 @@ const authOptions: NextAuthOptions = {
                     token.image = user.image;
                     token.role = user.role;
                 }
+            }
+
+            // Allow client-side session updates (useSession().update)
+            if (trigger === "update" && session?.user) {
+                if (session.user.name) token.name = session.user.name;
+                if (session.user.image) token.image = session.user.image;
             }
 
             return token;
