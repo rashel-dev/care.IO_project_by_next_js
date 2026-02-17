@@ -74,7 +74,11 @@ export async function GET(req: NextRequest, _context: { params: Promise<Record<s
 
     const user = await User.findById(userId);
     if (user?.email) {
-      sendInvoiceEmail(user.email, newBooking).catch((err) => console.error("Email error:", err));
+      try {
+        await sendInvoiceEmail(user.email, newBooking);
+      } catch (err) {
+        console.error("Email error:", err);
+      }
     }
 
     return NextResponse.redirect(new URL("/my-bookings?status=success", url.origin));

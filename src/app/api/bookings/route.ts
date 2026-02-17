@@ -43,9 +43,13 @@ export async function POST(req: Request) {
 
     await newBooking.save();
 
-    // Send invoice email asynchronously
+    // Send invoice email
     if (session.user.email) {
-      sendInvoiceEmail(session.user.email, newBooking).catch(err => console.error("Email error:", err));
+      try {
+        await sendInvoiceEmail(session.user.email, newBooking);
+      } catch (err) {
+        console.error("Email error:", err);
+      }
     }
 
     return NextResponse.json({ message: "Booking created successfully", booking: newBooking }, { status: 201 });
