@@ -1,18 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import authOptions from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import Booking from "@/models/Booking";
 import mongoose from "mongoose";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
     await dbConnect();
 
     // Convert userId to ObjectId if it's a string
@@ -41,14 +41,14 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
     const { status } = await req.json();
 
     if (status !== 'Cancelled') {
