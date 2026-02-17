@@ -6,7 +6,7 @@ import { services } from '@/data/services';
 import { useSession } from 'next-auth/react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaCalendarAlt, FaMapMarkerAlt, FaCalculator, FaCheckCircle, FaChevronRight, FaChevronLeft } from 'react-icons/fa';
+import { FaCalendarAlt, FaMapMarkerAlt, FaCalculator, FaCheckCircle, FaChevronRight, FaChevronLeft, FaStripe } from 'react-icons/fa';
 
 const BookingPage = () => {
   const { id } = useParams();
@@ -62,12 +62,13 @@ const BookingPage = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           serviceId: service.id,
           serviceName: service.title,
+          serviceImage: service.image,
           duration: {
             type: formData.durationType,
             value: formData.durationValue,
@@ -79,23 +80,24 @@ const BookingPage = () => {
             area: formData.area,
             address: formData.address,
           },
-          totalCost: totalCost,
+          totalCost,
         }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        toast.success("Booking confirmed and marked as paid!");
-        setTimeout(() => {
-          router.push('/my-bookings');
-        }, 1500);
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          toast.error("Failed to start payment session");
+        }
       } else {
-        toast.error(data.message || "Failed to confirm booking");
+        toast.error(data.message || "Failed to initiate payment");
       }
     } catch (err) {
       console.error(err);
-      toast.error("An error occurred during booking confirmation");
+      toast.error("An error occurred during payment setup");
     } finally {
       setIsSubmitting(false);
     }
@@ -138,6 +140,7 @@ const BookingPage = () => {
                                 value={formData.durationType}
                                 onChange={handleChange}
                                 className="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                                aria-label="Duration type"
                             >
                                 <option value="hours">Hours</option>
                                 <option value="days">Days</option>
@@ -152,6 +155,7 @@ const BookingPage = () => {
                                 value={formData.durationValue}
                                 onChange={handleChange}
                                 className="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                                placeholder="Duration value"
                             />
                         </div>
                     </div>
@@ -223,7 +227,8 @@ const BookingPage = () => {
                             disabled={isSubmitting}
                             className="flex items-center justify-center gap-3 px-12 py-4 bg-linear-to-r from-cyan-500 to-blue-600 hover:scale-[1.02] text-white font-extrabold rounded-xl transition-all shadow-xl shadow-cyan-500/20 disabled:opacity-50"
                         >
-                            {isSubmitting ? 'Processing...' : 'Confirm Payment & Book'}
+                            <FaStripe className="text-2xl" />
+                            {isSubmitting ? 'Processing...' : 'Pay with Stripe & Book'}
                         </button>
                     </div>
                 </div>
